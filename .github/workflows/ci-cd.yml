@@ -5,9 +5,6 @@ on:
   push:
     branches: ["main"]
 
-permissions:
-  contents: write  # 🔥 Permite criar releases no GitHub
-
 jobs:
   CI:
     runs-on: ubuntu-latest
@@ -49,7 +46,7 @@ jobs:
       - name: Baixar Artefato
         uses: actions/download-artifact@v4
         with:
-          name: hello-world-exe
+          name: hello-world-exe  # Nome correto do artefato
 
       - name: Criar Release no GitHub
         uses: softprops/action-gh-release@v2
@@ -68,17 +65,17 @@ jobs:
       - name: Baixar Artefato
         uses: actions/download-artifact@v4
         with:
-          name: hello-world-exe
+          name: hello-world-exe  # Nome correto do artefato
 
       - name: Instalar Ferramentas WinRM
-        run: sudo apt-get install -y winrm
+        run: sudo apt-get install -y python3-pip && pip3 install pywinrm
 
       - name: Copiar Arquivos para VM Windows
         run: |
           echo "Copiando para VM Windows"
-          # winrmcp -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} app.zip C:\Deploy\app.zip
+          # python3 -m winrm.cli -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} -script "winrmcp -src app.zip -dest C:\Deploy\app.zip"
 
       - name: Executar Deploy na VM
         run: |
           echo "Deploy em VM Windows"
-          # winrm -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} 'powershell Expand-Archive -Path C:\Deploy\app.zip -DestinationPath C:\Deploy\app && Start-Process -NoNewWindow -FilePath "C:\Deploy\app\seu-executavel.exe"'
+          # python3 -m winrm.cli -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} -script "powershell Expand-Archive -Path C:\Deploy\app.zip -DestinationPath C:\Deploy\app && Start-Process -NoNewWindow -FilePath 'C:\Deploy\app\seu-executavel.exe'"
