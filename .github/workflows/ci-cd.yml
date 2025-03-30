@@ -5,6 +5,9 @@ on:
   push:
     branches: ["main"]
 
+permissions:
+  contents: write  # Permissão para criar releases e modificar conteúdo do repositório
+
 jobs:
   CI:
     runs-on: ubuntu-latest
@@ -55,8 +58,8 @@ jobs:
           name: Release ${{ steps.version.outputs.version }}
           draft: false
           prerelease: false
-          files: out/*
-
+          files: out/*  # Incluindo os arquivos .exe no release
+          
   CD:
     runs-on: ubuntu-latest
     needs: [Release]
@@ -73,9 +76,9 @@ jobs:
       - name: Copiar Arquivos para VM Windows
         run: |
           echo "Copiando para VM Windows"
-          # python3 -m winrm.cli -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} -script "winrmcp -src app.zip -dest C:\Deploy\app.zip"
+        #  python3 -m winrm.cli -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} -script "winrmcp -src app.zip -dest C:\Deploy\app.zip"
 
       - name: Executar Deploy na VM
         run: |
           echo "Deploy em VM Windows"
-          # python3 -m winrm.cli -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} -script "powershell Expand-Archive -Path C:\Deploy\app.zip -DestinationPath C:\Deploy\app && Start-Process -NoNewWindow -FilePath 'C:\Deploy\app\seu-executavel.exe'"
+         # python3 -m winrm.cli -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} -script "powershell Expand-Archive -Path C:\Deploy\app.zip -DestinationPath C:\Deploy\app && Start-Process -NoNewWindow -FilePath 'C:\Deploy\app\seu-executavel.exe'"
