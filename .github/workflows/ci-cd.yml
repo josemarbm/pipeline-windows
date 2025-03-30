@@ -22,6 +22,20 @@ jobs:
 
       - name: Restaurar Dependências
         run: dotnet restore HelloWorld.csproj
+      - name: Configurar SonarCloud
+        run: echo "Sonar Analyst"
+      #   uses: sonarsource/sonarcloud-github-action@v2
+      #   with:
+      #     organization: "seu-usuario-ou-organizacao"  # Substitua com sua organização no SonarCloud
+      #     projectKey: "seu-projeto-chave"  # Substitua com a chave do seu projeto no SonarCloud
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Defina o token do SonarCloud como um secret no GitHub
+
+      # - name: Rodar Análise do SonarCloud
+      #   run: dotnet build HelloWorld.csproj /p:Configuration=Release
+
+      - name: Rodar Testes Unitários
+        run: echo  "Run test" # dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj --logger "trx"  # Executa os testes
 
       - name: Compilar Aplicação
         run: dotnet publish HelloWorld.csproj -c Release -r win-x64 --self-contained true -o out
