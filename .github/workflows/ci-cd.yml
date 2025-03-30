@@ -18,10 +18,10 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Restaurar Dependências
-        run: dotnet restore
+        run: dotnet restore HelloWorld.csproj
 
       - name: Compilar Aplicação
-        run: dotnet publish -c Release -r win-x64 --self-contained true -o out
+        run: dotnet publish HelloWorld.csproj -c Release -r win-x64 --self-contained true -o out
 
       - name: Armazenar Artefato
         uses: actions/upload-artifact@v4
