@@ -5,6 +5,9 @@ on:
   push:
     branches: ["main"]
 
+permissions:
+  contents: write  # 🔥 Permite criar releases no GitHub
+  
 jobs:
   CI:
     runs-on: ubuntu-latest
