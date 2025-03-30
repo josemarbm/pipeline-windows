@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: write  # 🔥 Permite criar releases no GitHub
-  
+
 jobs:
   CI:
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
       - name: Baixar Artefato
         uses: actions/download-artifact@v4
         with:
-          name: app-build
+          name: hello-world-exe
 
       - name: Instalar Ferramentas WinRM
         run: sudo apt-get install -y winrm
