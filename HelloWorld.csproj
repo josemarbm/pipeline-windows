@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
-    </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework> <!-- Ajuste para sua versão -->
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers> <!-- Especificando o sistema alvo -->
+    <SelfContained>true</SelfContained> <!-- Garantindo que seja um aplicativo autossuficiente -->
+  </PropertyGroup>
+
 </Project>

@@ -26,11 +26,14 @@ jobs:
       - name: Compilar Aplicação
         run: dotnet publish HelloWorld.csproj -c Release -r win-x64 --self-contained true -o out
 
+
       - name: Armazenar Artefato
         uses: actions/upload-artifact@v4
         with:
           name: hello-world-exe
           path: out/
+      - name: Lista arquivos
+        run: ls -lha out/         
 
   Release:
     runs-on: ubuntu-latest
