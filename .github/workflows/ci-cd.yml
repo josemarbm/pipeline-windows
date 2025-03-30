@@ -1,0 +1,81 @@
+name: CI-CD-HelloWorld
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Instalar .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restaurar Dependências
+        run: dotnet restore
+
+      - name: Compilar Aplicação
+        run: dotnet publish -c Release -r win-x64 --self-contained true -o out
+
+      - name: Armazenar Artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-world-exe
+          path: out/
+
+  Release:
+    runs-on: ubuntu-latest
+    needs: [CI]
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Determinar Versão com Codacy/Git-Version
+        id: version
+        uses: codacy/git-version@2.7.1
+        with:
+          prefix: "v"
+
+      - name: Baixar Artefato
+        uses: actions/download-artifact@v4
+        with:
+          name: hello-world-exe
+
+      - name: Criar Release no GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+          files: out/*
+
+  CD:
+    runs-on: ubuntu-latest
+    needs: [Release]
+
+    steps:
+      - name: Baixar Artefato
+        uses: actions/download-artifact@v4
+        with:
+          name: app-build
+
+      - name: Instalar Ferramentas WinRM
+        run: sudo apt-get install -y winrm
+
+      - name: Copiar Arquivos para VM Windows
+        run: |
+          echo "Copiando para VM Windows"
+          # winrmcp -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} app.zip C:\Deploy\app.zip
+
+      - name: Executar Deploy na VM
+        run: |
+          echo "Deploy em VM Windows"
+          # winrm -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} 'powershell Expand-Archive -Path C:\Deploy\app.zip -DestinationPath C:\Deploy\app && Start-Process -NoNewWindow -FilePath "C:\Deploy\app\seu-executavel.exe"'
