@@ -6,7 +6,6 @@ message() {
   echo "# $1"
   echo "######################################################################"
 }
-sleep 20
 getReleaseVersion() {
   # 1. Create array based on LATEST_TAG
   LATEST_TAG=$(git describe --tags "$(git rev-list --tags --max-count=1)") # gets tags across all branches, not just the current branch
@@ -59,4 +58,3 @@ else
     exit 1
 
 fi
-sleep 20

@@ -6,7 +6,7 @@ message() {
   echo "# $1"
   echo "######################################################################"
 }
-
+sleep 3
 getHotfixReleaseVersion() {
   # 1. Create array based on LATEST_TAG
   LATEST_TAG=$(git describe --tags "$(git rev-list --tags --max-count=1)") # gets tags across all branches, not just the current branch
@@ -19,6 +19,7 @@ getHotfixReleaseVersion() {
   V_MINOR=${TAG_LIST[0]}
   V_PATCH=$(( TAG_LIST[1] + 1 ))
   RELEASE_VERSION=${V_MINOR}.${V_PATCH}
+  sleep 3
 }
 
 message ">>> Starting hotfix"
@@ -54,10 +55,11 @@ if [[ $RESPONSE =~ ^([yY][eE][sS]|[yY])$ ]]; then
   git commit --allow-empty -m "Hotfix - $RELEASE_VERSION"
   git push origin "$BRANCH_NAME"
   gh pr create --base main --head "$BRANCH_NAME" --title "Hotfix - $RELEASE_VERSION" --fill
-
+  sleep 5
 else
 
   message "Action cancelled exiting..."
   exit 1
 
 fi
+sleep 10
