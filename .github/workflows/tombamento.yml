@@ -24,6 +24,7 @@ jobs:
 
       - name: Reset release para develop
         run: |
+          DATE=$(date +'%Y.%m.%d')
           git fetch origin develop
           git checkout develop
           git pull origin develop
