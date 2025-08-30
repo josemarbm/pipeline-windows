@@ -23,8 +23,8 @@ jobs:
 
       - name: Reset release para develop
         run: |
-          git fetch origin develop:develop
-          git fetch origin release:release
+          git fetch origin develop
+          git fetch origin release
           git checkout release
           git reset --hard develop
           git push origin release --force
