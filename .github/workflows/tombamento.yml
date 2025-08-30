@@ -32,7 +32,16 @@ jobs:
           git reset --hard develop
           git push origin release --force
 
+      # verifica se tag ja existe
+      - name: Verificar se tag ja existe
+        id: check_tag
+        run: |
+          if git describe --tags --exact "release-$(date +'%Y.%m.%d')" &> /dev/null; then
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+          fi
+          
       - name: Criar tag de release
+        if: steps.check_tag.outputs.tag_exists != 'true'
         run: |
           DATE=$(date +'%Y.%m.%d')
           git tag -a "release-$DATE" -m "Release quinzenal (reset develop -> release em $DATE)"
