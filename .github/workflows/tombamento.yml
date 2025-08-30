@@ -24,15 +24,12 @@ jobs:
 
       - name: Reset release para develop
         run: |
-          DATE=$(date +'%Y.%m.%d')
           git fetch origin develop
           git checkout develop
           git pull origin develop
           git fetch origin release
           git checkout release
           git reset --hard develop
-          git add .
-          git commit -m "Tobamento total da branch develop para release em $DATE"
           git push origin release --force
 
       - name: Criar tag de release
