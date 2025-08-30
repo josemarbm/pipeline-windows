@@ -9,6 +9,8 @@ inputs:
   release-branch:
     description: 'Nome da branch de release'
     required: true
+  github-token:
+   required: false
 
 runs:
   using: 'composite'
@@ -17,7 +19,7 @@ runs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ inputs.github-token }}
 
     - name: Configurar Git
       run: |
@@ -27,16 +29,16 @@ runs:
     - name: Tombamento develop -> release
       run: |
         DATE=$(date +'%Y.%m.%d')
-        git fetch origin ${develop-branch}
-        git fetch origin ${develop-branch}
-        git pull origin ${develop-branch}
-        git fetch origin ${release-branch}
-        git checkout ${release-branch}
-        git pull origin ${release-branch}
-        git reset --hard origin ${develop-branch}
+        git fetch origin ${inputs.develop-branch}
+        git fetch origin ${inputs.develop-branch}
+        git pull origin ${inputs.develop-branch}
+        git fetch origin ${inputs.release-branch}
+        git checkout ${inputs.release-branch}
+        git pull origin ${inputs.release-branch}
+        git reset --hard origin ${inputs.develop-branch}
         git add .
         git commit -m "Tobamento total da branch develop para release em $DATE"
-        git push origin ${release-branch} --force
+        git push origin ${inputs.release-branch} --force
 
     - name: Criar tag de release
       run: |

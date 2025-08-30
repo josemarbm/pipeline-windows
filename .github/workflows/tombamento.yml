@@ -16,3 +16,4 @@ jobs:
         with:
           develop-branch: 'develop'
           release-branch: 'release'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
