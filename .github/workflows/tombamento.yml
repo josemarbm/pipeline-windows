@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: "0 9 1,15 * *"   # roda a cada 15 dias
   workflow_dispatch:         # execução manual
+  push:
+    branches: ["develop"]
 
 jobs:
   tombamento:
