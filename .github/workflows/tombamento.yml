@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Tombamento Develop -> Release
-        uses: .github/actions/tombamento
+        uses: ./.github/actions/tombamento
         with:
           develop-branch: 'develop'
           release-branch: 'release'
