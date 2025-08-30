@@ -1,0 +1,45 @@
+name: Tombamento Develop -> Release (Reset Total)
+
+description: 'Reset total da branch release'
+
+inputs:
+  develop-branch:
+    description: 'Nome da branch de desenvolvimento'
+    required: true
+  release-branch:
+    description: 'Nome da branch de release'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repositório
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configurar Git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Tombamento develop -> release
+      run: |
+        DATE=$(date +'%Y.%m.%d')
+        git fetch origin ${develop-branch}
+        git fetch origin ${develop-branch}
+        git pull origin ${develop-branch}
+        git fetch origin ${release-branch}
+        git checkout ${release-branch}
+        git pull origin ${release-branch}
+        git reset --hard origin ${develop-branch}
+        git add .
+        git commit -m "Tobamento total da branch develop para release em $DATE"
+        git push origin ${release-branch} --force
+
+    - name: Criar tag de release
+      run: |
+        DATE=$(date +'%Y.%m.%d')
+        git tag -a "release-$DATE" -m "Release quinzenal (reset develop -> release em $DATE)"
+        git push origin "release-$DATE"

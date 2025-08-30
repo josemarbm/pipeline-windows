@@ -1,4 +1,4 @@
-name: Tombamento develop -> release (reset total)
+name: Meu Workflow
 
 on:
   schedule:
@@ -8,30 +8,11 @@ on:
     branches: ["develop"]
 
 jobs:
-  tombamento:
+  meu-job:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repositório
-        uses: actions/checkout@v4
+      - name: Tombamento Develop -> Release
+        uses: .github/actions/tombamento
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configurar Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Reset release para develop
-        run: |
-          git fetch origin develop
-          git fetch origin release
-          git checkout release
-          git reset --hard develop
-          git push origin release --force
-
-      - name: Criar tag de release
-        run: |
-          DATE=$(date +'%Y.%m.%d')
-          git tag -a "release-$DATE" -m "Release quinzenal (reset develop -> release em $DATE)"
-          git push origin "release-$DATE"
+          develop-branch: 'develop'
+          release-branch: 'release'
