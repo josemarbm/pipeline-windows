@@ -1,0 +1,17 @@
+name: Protect CI-CD-HelloWorld
+target: branch
+enforcement: active
+bypass_actors: []
+conditions:
+  ref_name:
+    include:
+      - main
+  file_paths:
+    include:
+      - scripts/**
+rules:
+  - type: required_status_checks
+    parameters:
+      required_checks:
+        - CI-CD-HelloWorld
+      strict_required_status_checks_policy: true
