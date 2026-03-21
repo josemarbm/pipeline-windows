@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+import re
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -141,6 +142,38 @@ def append_to_github_summary(markdown_content: str):
     else:
         print("[*] GITHUB_STEP_SUMMARY environment variable not found or file does not exist. Outputting to console only.")
 
+# ==========================================
+# 5. Log Filtering Logic
+# ==========================================
+
+def filter_error_logs(log_text: str, context_lines: int = 20) -> str:
+    """Filters large log files to extract only the error segments with context."""
+    lines = log_text.splitlines()
+    error_patterns = re.compile(r'(?i)(error|exception|fail|failed|traceback|fatal|critical|cannot find|unhandled)')
+    
+    error_indices = [i for i, line in enumerate(lines) if error_patterns.search(line)]
+    
+    if not error_indices:
+        # Se não achar nada, pega as ultimas 150 linhas
+        return "\n".join(lines[-150:])
+        
+    ranges = []
+    for idx in error_indices:
+        start = max(0, idx - context_lines)
+        end = min(len(lines), idx + context_lines + 1)
+        if ranges and start <= ranges[-1][1]:
+            ranges[-1] = (ranges[-1][0], max(ranges[-1][1], end))
+        else:
+            ranges.append((start, end))
+            
+    filtered_lines = []
+    for start, end in ranges:
+        filtered_lines.extend(lines[start:end])
+        filtered_lines.append("\n... [conteúdo omitido] ...\n")
+        
+    filtered_text = "\n".join(filtered_lines)
+    return filtered_text[-20000:] if len(filtered_text) > 20000 else filtered_text
+
 def main():
     parser = argparse.ArgumentParser(description="DevOps AI Agent to analyze CI/CD build errors.")
     parser.add_argument("--log-file", type=str, required=True, help="Path to the file containing the failed job logs.")
@@ -153,10 +186,9 @@ def main():
         sys.exit(1)
         
     with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
-        # We might want to limit the log size to avoid hitting LLM context limits.
-        # Grabbing the last 15000 characters is usually a good heuristic for build errors.
         full_log = f.read()
-        log_snippet = full_log[-15000:] if len(full_log) > 15000 else full_log
+        
+    log_snippet = filter_error_logs(full_log)
         
     if not log_snippet.strip():
         print("Log file is empty.")
