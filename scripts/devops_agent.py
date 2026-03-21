@@ -26,7 +26,7 @@ DETECT_LANGUAGE_PROMPT = PromptTemplate.from_template(
 DOTNET_EXPERT_PROMPT = PromptTemplate.from_template(
     """Você é um Engenheiro DevOps Sênior especialista em C# e .NET. 
     Analise o log de erro de build abaixo e:
-    1. Explique a causa raiz do problema de forma clara.
+    1. Explique a causa raiz do problema de forma clara em poucas linhas.
     2. Sugira a correção exata no código ou no comando do CLI do .NET.
     
     Log do erro:
