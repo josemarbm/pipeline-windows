@@ -75,23 +75,6 @@ GENERAL_EXPERT_PROMPT = PromptTemplate.from_template(
 )
 
 # ==========================================
-# 2. Routing Logic
-# ==========================================
-
-def _route_by_language(info):
-    lang = info["language"].strip().upper()
-    print(f"[*] Detected technology context: {lang}")
-    
-    if "DOTNET" in lang or "C#" in lang or "CSHARP" in lang:
-        return DOTNET_EXPERT_PROMPT
-    elif "PYTHON" in lang:
-        return PYTHON_EXPERT_PROMPT
-    elif "TYPESCRIPT" in lang or "JAVASCRIPT" in lang or "NODE" in lang:
-        return TYPESCRIPT_EXPERT_PROMPT
-    else:
-        return GENERAL_EXPERT_PROMPT
-
-# ==========================================
 # 3. Main Agent Execution Function
 # ==========================================
 
@@ -116,18 +99,29 @@ def analyze_error(log_content: str):
         | StrOutputParser()
     )
 
-    # Route to the specialist prompt based on detected language, then call LLM
-    specialist_chain = (
-        {"log_content": lambda x: x["log_content"], "language": detection_chain}
-        | RunnablePassthrough.assign(prompt=_route_by_language)
-        | (lambda x: x["prompt"].format(log_content=x["log_content"]))
+    # Define the branching logic for specialist agents
+    specialist_selection = RunnableBranch(
+        (lambda x: any(kw in x["language"].upper() for kw in ["DOTNET", "C#", "CSHARP"]), DOTNET_EXPERT_PROMPT),
+        (lambda x: "PYTHON" in x["language"].upper(), PYTHON_EXPERT_PROMPT),
+        (lambda x: any(kw in x["language"].upper() for kw in ["TYPESCRIPT", "JAVASCRIPT", "NODE"]), TYPESCRIPT_EXPERT_PROMPT),
+        GENERAL_EXPERT_PROMPT
+    )
+
+    # Full chain: 
+    # 1. Prepare input (log_content) and detect language
+    # 2. Select the right specialist prompt based on language
+    # 3. Execute the selected prompt with the original log_content
+    # 4. Parse the LLM output
+    full_chain = (
+        {"log_content": RunnablePassthrough(), "language": detection_chain}
+        | specialist_selection
         | llm
         | StrOutputParser()
     )
 
     print("[*] Starting AI Analysis of the logs...")
     try:
-        result = specialist_chain.invoke({"log_content": log_content})
+        result = full_chain.invoke(log_content)
         return result
     except Exception as e:
         print(f"Error during AI analysis: {e}")
