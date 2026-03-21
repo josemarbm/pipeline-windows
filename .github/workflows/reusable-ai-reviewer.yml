@@ -12,9 +12,9 @@ on:
         required: true
         description: "Gemini API Key for the DevOps AI Agent"
 
-permissions:
-  actions: read
-  contents: read
+# permissions:
+#   actions: read
+#   contents: read
 
 jobs:
   analyze_failure:
