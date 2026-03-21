@@ -4,7 +4,7 @@ class Program
 {
     static void Main()
     {
-        Console.WriteLine("Hello, World!") // erro proposital
+        Console.WriteLine("Hello, World!") //erro proprosital inserido
         Console.ReadKey(); // Aguarda uma tecla antes de fechar
     }
 }
