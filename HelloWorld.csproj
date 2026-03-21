@@ -5,6 +5,8 @@
     <TargetFramework>net8.0</TargetFramework> <!-- Ajuste para sua versão -->
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers> <!-- Especificando o sistema alvo -->
     <SelfContained>true</SelfContained> <!-- Garantindo que seja um aplicativo autossuficiente -->
+    <testProject>false</testProject> <!-- Se este projeto não for um projeto de teste -->
+    <erro-propsital-testes>false</erro-propsital-teste> <!-- erro proprosital inserido -->
   </PropertyGroup>
 
 </Project>
