@@ -117,3 +117,32 @@ jobs:
         run: |
           echo "Deploy em VM Windows"
          # python3 -m winrm.cli -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} -script "powershell Expand-Archive -Path C:\Deploy\app.zip -DestinationPath C:\Deploy\app && Start-Process -NoNewWindow -FilePath 'C:\Deploy\app\seu-executavel.exe'"
+  
+  analyze_failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Instalar Dependências (Agente)
+        run: pip install -r scripts/requirements.txt
+        
+      - name: Download Failed Job Logs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Buscando logs do workflow fallho (Run ID: ${{ github.event.workflow_run.id }})..."
+          gh run view ${{ github.event.workflow_run.id }} --log-failed > error_log.txt || true
+          
+      - name: Analisar Erro com DevOps AI
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/devops_agent.py --log-file error_log.txt
