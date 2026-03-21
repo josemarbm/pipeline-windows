@@ -104,7 +104,7 @@ def analyze_error(log_content: str):
         sys.exit(1)
         
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-pro", # You can use gemini-2.0-flash if 2.5 is not accessible, but 2.5-pro is generally best for coding
+        model="gemini-2.0-flash", # You can use gemini-2.0-flash if 2.5 is not accessible, but 2.5-pro is generally best for coding
         temperature=0.1,
         max_output_tokens=2048
     )
