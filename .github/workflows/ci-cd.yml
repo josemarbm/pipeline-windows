@@ -121,7 +121,7 @@ jobs:
   analyze_failure:
     runs-on: ubuntu-latest
     # if failure jobs failure
-    if: ${{ failure()}}
+    if: failure()
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
