@@ -153,6 +153,10 @@ jobs:
           # A API retorna o texto do log para jobs concluídos
           gh api repos/${{ github.repository }}/actions/jobs/$FAILED_JOB_ID/logs > error_log.txt || true
 
+      # print error log for debugging
+      - name: Print Error Log
+        run: cat error_log.txt    
+
       - name: Analisar Erro com DevOps AI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
