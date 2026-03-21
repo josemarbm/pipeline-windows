@@ -1,0 +1,61 @@
+name: DevOps AI Reviewer (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      run_id:
+        required: true
+        type: string
+        description: "The GitHub Run ID to analyze"
+    secrets:
+      GEMINI_API_KEY:
+        required: true
+        description: "Gemini API Key for the DevOps AI Agent"
+
+# permissions:
+#   actions: read
+#   contents: read
+
+jobs:
+  analyze_failure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Instalar Dependências (Agente)
+        run: pip install -r scripts/requirements.txt
+
+      - name: Download Failed Job Logs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Buscando Job ID que falhou no Run: ${{ inputs.run_id }}..."
+          # Busca o ID do(s) job(s) com status failure
+          FAILED_JOB_ID=$(gh api repos/${{ github.repository }}/actions/runs/${{ inputs.run_id }}/jobs --jq '.jobs[] | select(.conclusion == "failure") | .id' | head -n 1)
+
+          if [ -z "$FAILED_JOB_ID" ]; then
+            echo "Nenhum job falho encontrado."
+            touch error_log.txt
+            exit 0
+          fi
+
+          echo "Baixando logs do Job ID: $FAILED_JOB_ID..."
+          # A API retorna o texto do log para jobs concluídos
+          gh api repos/${{ github.repository }}/actions/jobs/$FAILED_JOB_ID/logs > error_log.txt || true
+
+      # print error log for debugging
+      - name: Print Error Log
+        run: cat error_log.txt
+
+      - name: Analisar Erro com DevOps AI
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/devops_agent.py --log-file error_log.txt

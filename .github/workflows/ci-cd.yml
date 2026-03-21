@@ -6,17 +6,17 @@ on:
     branches: ["main"]
 
 permissions:
-  contents: write  # Permissão para criar releases e modificar conteúdo do repositório
+  contents: write # Permissão para criar releases e modificar conteúdo do repositório
 
 jobs:
   CI:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do Código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Instalar .NET SDK
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
 
@@ -27,18 +27,18 @@ jobs:
         uses: dependency-check/Dependency-Check_Action@main
         id: Depcheck
         with:
-          project: 'hello-world-exe'
-          path: '.'
-          format: 'HTML'
-          out: 'reports' # this is the default, no need to specify unless you wish to override it
+          project: "hello-world-exe"
+          path: "."
+          format: "HTML"
+          out: "reports" # this is the default, no need to specify unless you wish to override it
           args: >
             --failOnCVSS 7
             --enableRetired
       - name: Upload Test results
         uses: actions/upload-artifact@master
         with:
-           name: Depcheck report
-           path: ${{github.workspace}}/reports   
+          name: Depcheck report
+          path: ${{github.workspace}}/reports
 
       - name: Configurar SonarCloud
         run: echo "Sonar Analyst"
@@ -58,14 +58,13 @@ jobs:
       - name: Compilar Aplicação
         run: dotnet publish HelloWorld.csproj -c Release -r win-x64 --self-contained true -o out
 
-
       - name: Armazenar Artefato
         uses: actions/upload-artifact@v4
         with:
           name: hello-world-exe
           path: out/
       - name: Lista arquivos
-        run: ls -lha out/         
+        run: ls -lha out/
 
   Release:
     runs-on: ubuntu-latest
@@ -84,7 +83,7 @@ jobs:
       - name: Baixar Artefato
         uses: actions/download-artifact@v4
         with:
-          name: hello-world-exe  # Nome correto do artefato
+          name: hello-world-exe # Nome correto do artefato
 
       - name: Criar Release no GitHub
         uses: softprops/action-gh-release@v2
@@ -93,8 +92,8 @@ jobs:
           name: Release ${{ steps.version.outputs.version }}
           draft: false
           prerelease: false
-          files: out/*  # Incluindo os arquivos .exe no release
-          
+          files: out/* # Incluindo os arquivos .exe no release
+
   CD:
     runs-on: ubuntu-latest
     needs: [Release]
@@ -103,7 +102,7 @@ jobs:
       - name: Baixar Artefato
         uses: actions/download-artifact@v4
         with:
-          name: hello-world-exe  # Nome correto do artefato
+          name: hello-world-exe # Nome correto do artefato
 
       - name: Instalar Ferramentas WinRM
         run: sudo apt-get install -y python3-pip && pip3 install pywinrm
@@ -116,4 +115,12 @@ jobs:
       - name: Executar Deploy na VM
         run: |
           echo "Deploy em VM Windows"
-         # python3 -m winrm.cli -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} -script "powershell Expand-Archive -Path C:\Deploy\app.zip -DestinationPath C:\Deploy\app && Start-Process -NoNewWindow -FilePath 'C:\Deploy\app\seu-executavel.exe'"
+        # python3 -m winrm.cli -host ${{ secrets.WINDOWS_HOST }} -username ${{ secrets.WINDOWS_USER }} -password ${{ secrets.WINDOWS_PASS }} -script "powershell Expand-Archive -Path C:\Deploy\app.zip -DestinationPath C:\Deploy\app && Start-Process -NoNewWindow -FilePath 'C:\Deploy\app\seu-executavel.exe'"
+
+  analyze_failure:
+    needs: [CI]
+    if: failure()
+    uses: ./.github/workflows/reusable-ai-reviewer.yml
+    with:
+      run_id: ${{ github.run_id }}
+    secrets: inherit
