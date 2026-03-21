@@ -3,7 +3,7 @@ name: CI-CD-HelloWorld
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
+    branches: ["main","feature/*","bugfix/*","hotfix/*"]
 
 permissions:
   contents: write  # Permissão para criar releases e modificar conteúdo do repositório
