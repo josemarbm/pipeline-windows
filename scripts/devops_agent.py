@@ -28,7 +28,6 @@ DOTNET_EXPERT_PROMPT = PromptTemplate.from_template(
     Analise o log de erro de build abaixo e:
     1. Explique a causa raiz do problema de forma clara.
     2. Sugira a correção exata no código ou no comando do CLI do .NET.
-    3. Retorne a resposta formatada em Markdown, usando blocos de código onde apropriado.
     
     Log do erro:
     {log_content}
@@ -41,7 +40,6 @@ PYTHON_EXPERT_PROMPT = PromptTemplate.from_template(
     Analise o log de erro de build/execução abaixo e:
     1. Explique a causa raiz do problema de forma detalhada.
     2. Liste os passos ou comandos corrigidos para resolver a falha.
-    3. Retorne a resposta formatada em Markdown, usando blocos de código onde apropriado.
     
     Log do erro:
     {log_content}
@@ -54,7 +52,6 @@ TYPESCRIPT_EXPERT_PROMPT = PromptTemplate.from_template(
     Analise o log do erro de build ou teste abaixo e:
     1. Identifique o arquivo e a linha onde o erro ocorreu (se aplicável), e explique o motivo.
     2. Sugira o ajuste no código, configuração (tsconfig.json, package.json) ou dependências para corrigir o problema.
-    3. Retorne a resposta formatada em Markdown, com exemplos de código.
     
     Log do erro:
     {log_content}
@@ -67,7 +64,6 @@ GENERAL_EXPERT_PROMPT = PromptTemplate.from_template(
     Analise este log de falha de job do CI/CD e:
     1. Explique de forma concisa por que o job falhou.
     2. Forneça a solução proposta.
-    3. Retorne em Markdown.
     
     Log do erro:
     {log_content}
