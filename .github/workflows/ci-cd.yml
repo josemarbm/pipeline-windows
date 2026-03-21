@@ -21,7 +21,7 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Restaurar Dependências
-        run: dotnet restore HelloWorld.csproj
+        run: dotnet restored HelloWorld.csproj
 
       - name: Depcheck
         uses: dependency-check/Dependency-Check_Action@main
