@@ -2,7 +2,7 @@ name: DevOps AI Reviewer
 
 on:
   workflow_run:
-    workflows: ["CI-CD-HelloWorld"] # Target workflow to monitor
+    workflows: ["*"] # Target workflow to monitor
     types:
       - completed
 
