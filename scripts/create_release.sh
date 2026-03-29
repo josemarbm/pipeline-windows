@@ -56,7 +56,9 @@ message ">>> Release: $RELEASE_VERSION"
 read -r -p "Last release version was '$LATEST_TAG', do you want to create '$RELEASE_VERSION' [Y/n]:  " RESPONSE
 if [[ $RESPONSE =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
-  BRANCH_NAME="release/$RELEASE_VERSION"
+  # Remove os pontos da versão para a branch
+  BRANCH_SAFE_VERSION="${RELEASE_VERSION//./-}"
+  BRANCH_NAME="release/$BRANCH_SAFE_VERSION"
   message ">>>>> Creating branch '$BRANCH_NAME' from main..."
 
   git checkout -b "$BRANCH_NAME" main
