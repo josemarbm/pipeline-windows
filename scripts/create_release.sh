@@ -8,16 +8,26 @@ message() {
 }
 getReleaseVersion() {
   # 1. Create array based on LATEST_TAG
-  LATEST_TAG=$(git describe --tags "$(git rev-list --tags --max-count=1)") # gets tags across all branches, not just the current branch
-  TAG_LIST=($(echo "$LATEST_TAG" | tr 'v' ' ' ))
+  # Get the latest semantic version tag, ignoring CI sha tags
+  LATEST_TAG=$(git tag --list "v[0-9]*" --sort=-v:refname | head -n 1)
+  
+  if [[ -z "$LATEST_TAG" ]]; then
+    echo "No valid version tags found. Assuming v1.0"
+    RELEASE_VERSION="1.0"
+    return
+  fi
+
+  # Remove 'v' prefix and split by dots
+  VERSION_NO_V="${LATEST_TAG#v}"
+  TAG_LIST=($(echo "$VERSION_NO_V" | tr '.' ' '))
 
   # 2. Exit if invalid version
-  [[ "${#TAG_LIST[@]}" -ne 2 ]] && echo "$LATEST_TAG is not a valid version" && exit 1
+  [[ "${#TAG_LIST[@]}" -lt 2 ]] && echo "$LATEST_TAG is not a valid version" && exit 1
 
-  # 3. Calculate release version
-  V_MINOR=$(( TAG_LIST[0] + 1 ))
-  V_PATCH=0
-  RELEASE_VERSION=${V_MINOR}.${V_PATCH}
+  # 3. Calculate release version (Increment Major)
+  V_MAJOR=$(( TAG_LIST[0] + 1 ))
+  V_MINOR=0
+  RELEASE_VERSION=${V_MAJOR}.${V_MINOR}
 }
 
 message ">>> Starting release"
