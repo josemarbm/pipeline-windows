@@ -26,14 +26,14 @@ message ">>> Starting release"
 
 gh auth status
 
-# 1. Make sure branch is set to develop
-[[ $(git rev-parse --abbrev-ref HEAD) != "develop" ]] && echo "ERROR: Checkout to develop" && exit 1
+# 1. Make sure branch is set to main
+[[ $(git rev-parse --abbrev-ref HEAD) != "main" ]] && echo "ERROR: Checkout to main" && exit 1
 
 # 2. Make sure branch is clean
 [[ $(git status --porcelain) ]] && echo "ERROR: The branch is not clean, commit your changes before creating the release" && exit 1
 
-message ">>> Pulling develop"
-git pull origin develop ##
+message ">>> Pulling main"
+git pull origin main ##
 message ">>> Pulling tags"
 git fetch --prune --prune-tags origin
 
@@ -46,9 +46,9 @@ read -r -p "Last release version was '$LATEST_TAG', do you want to create '$RELE
 if [[ $RESPONSE =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
   BRANCH_NAME="release/$RELEASE_VERSION"
-  message ">>>>> Creating branch '$BRANCH_NAME' from develop..."
+  message ">>>>> Creating branch '$BRANCH_NAME' from main..."
 
-  git checkout -b "$BRANCH_NAME" develop
+  git checkout -b "$BRANCH_NAME" main
   git push origin "$BRANCH_NAME"
   gh pr create --base main --head "$BRANCH_NAME" --title "Release - $RELEASE_VERSION" --fill
 
