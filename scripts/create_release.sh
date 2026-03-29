@@ -27,7 +27,8 @@ getReleaseVersion() {
   # 3. Calculate release version (Increment Major)
   V_MAJOR=$(( TAG_LIST[0] + 1 ))
   V_MINOR=0
-  RELEASE_VERSION=${V_MAJOR}.${V_MINOR}
+  V_PATCH=0
+  RELEASE_VERSION=${V_MAJOR}.${V_MINOR}.${V_PATCH}
 }
 
 message ">>> Starting release"
