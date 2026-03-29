@@ -9,7 +9,7 @@ message() {
 getReleaseVersion() {
   # 1. Create array based on LATEST_TAG
   LATEST_TAG=$(git describe --tags "$(git rev-list --tags --max-count=1)") # gets tags across all branches, not just the current branch
-  TAG_LIST=($(echo "$LATEST_TAG" | tr '.' ' '))
+  TAG_LIST=($(echo "$LATEST_TAG" | tr 'v' '.' ' '))
 
   # 2. Exit if invalid version
   [[ "${#TAG_LIST[@]}" -ne 2 ]] && echo "$LATEST_TAG is not a valid version" && exit 1
